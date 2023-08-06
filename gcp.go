@@ -31,9 +31,15 @@ func listProjects(ctx context.Context) ([]string, error) {
 	return projectIds, nil
 }
 
-func turnOnLoggingAPIIfNecessary(ctx context.Context, projectId string) {
-	serviceUsageService, _ := serviceusage.NewService(ctx)
-	enabledAPIs, _ := serviceUsageService.Services.List("projects/" + projectId).Filter("state:ENABLED").Do()
+func turnOnLoggingAPIIfNecessary(ctx context.Context, projectId string) error {
+	serviceUsageService, err := serviceusage.NewService(ctx)
+	if err != nil {
+		return fmt.Errorf("Error creating ServiceUsage service: %v", err)
+	}
+	enabledAPIs, err := serviceUsageService.Services.List("projects/" + projectId).Filter("state:ENABLED").Do()
+	if err != nil {
+		return fmt.Errorf("Error retrieving enabled APIs: %v", err)
+	}
 
 	loggingEnabled := false
 	for _, service := range enabledAPIs.Services {

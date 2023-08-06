@@ -16,7 +16,11 @@ func main() {
 	for _, project := range projects {
 		fmt.Printf("Project: %s\n", project)
 
-		turnOnLoggingAPIIfNecessary(ctx, project)
+		err = turnOnLoggingAPIIfNecessary(ctx, project)
+		if err != nil {
+			panic(err)
+		}
+
 		serviceAccounts, err := listServiceAccounts(ctx, project)
 		if err != nil {
 			panic(err)
