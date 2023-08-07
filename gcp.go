@@ -88,7 +88,7 @@ func inspectServiceAccount(ctx context.Context, projectId string, sa *iam.Servic
 		DisplayName: sa.DisplayName,
 		Email:       sa.Email,
 		Disabled:    sa.Disabled,
-		Keys: make([]string, 0),
+		Keys:        make([]string, 0),
 	}
 
 	// Keys

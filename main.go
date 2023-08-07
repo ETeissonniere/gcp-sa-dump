@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/schollz/progressbar/v3"
 	"google.golang.org/api/iam/v1"
 )
 
@@ -20,6 +21,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	status := fmt.Sprintf("scanning %d projects", len(projects))
+	bar := progressbar.Default(int64(len(projects)), status)
 
 	var wgProjects sync.WaitGroup
 	errCh := make(chan error, len(projects))
@@ -42,6 +46,8 @@ func main() {
 				errCh <- err
 				return
 			}
+
+			bar.Describe(fmt.Sprintf("%s (%d service accounts)", p, len(serviceAccounts)))
 
 			var wgServiceAccounts sync.WaitGroup
 			servicesErrCh := make(chan error, len(serviceAccounts))
@@ -67,6 +73,9 @@ func main() {
 			close(servicesErrCh)
 			close(servicesCh)
 
+			bar.Add(1)
+			bar.Describe(fmt.Sprintf("completed %s", p))
+
 			for e := range servicesErrCh {
 				errCh <- e
 			}
@@ -86,6 +95,8 @@ func main() {
 	wgProjects.Wait()
 	close(errCh)
 	close(projectsCh)
+
+	bar.Finish()
 
 	for e := range errCh {
 		panic(e)
