@@ -1,26 +1,26 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 )
 
 func main() {
+	outMode := flag.String("out", "text", "Output format (text, csv)")
+	flag.Parse()
+
+	if *outMode != "text" && *outMode != "csv" {
+		panic("Invalid output mode")
+	}
+
 	results, err := runCollection()
 	if err != nil {
 		panic(err)
 	}
 
-	for project, dump := range results {
-		fmt.Printf("Project: %s\n", project)
-		for _, d := range dump {
-			fmt.Println("\tService Account:", d.AccountId)
-			fmt.Println("\t\tDisplay Name:", d.DisplayName)
-			fmt.Println("\t\tEmail:", d.Email)
-			fmt.Println("\t\tDisabled:", d.Disabled)
-			fmt.Println("\t\tKeys:")
-			for _, key := range d.Keys {
-				fmt.Println("\t\t\t", key)
-			}
-		}
+	switch *outMode {
+	case "text":
+		outputText(results)
+	case "csv":
+		outputCSV(results)
 	}
 }
