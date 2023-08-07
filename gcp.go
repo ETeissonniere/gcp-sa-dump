@@ -54,6 +54,8 @@ func turnOnLoggingAPIIfNecessary(ctx context.Context, projectId string) error {
 		serviceUsageService.Services.Enable("projects/"+projectId+"/services/logging.googleapis.com", &serviceusage.EnableServiceRequest{}).Do()
 		time.Sleep(10 * time.Second) // give GCP some time to actually turn the API on
 	}
+
+	return nil
 }
 
 func listServiceAccounts(ctx context.Context, projectId string) ([]*iam.ServiceAccount, error) {
