@@ -25,7 +25,9 @@ func listProjects(ctx context.Context) ([]string, error) {
 
 	var projectIds []string
 	for _, project := range projectList.Projects {
-		projectIds = append(projectIds, project.ProjectId)
+		if project.LifecycleState == "ACTIVE" {
+			projectIds = append(projectIds, project.ProjectId)
+		}
 	}
 
 	return projectIds, nil
