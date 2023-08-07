@@ -69,15 +69,20 @@ func main() {
 				}(sa)
 			}
 			wgServiceAccounts.Wait()
-
 			close(servicesErrCh)
 			close(servicesCh)
 
 			bar.Add(1)
 			bar.Describe(fmt.Sprintf("completed %s", p))
 
+			allErrors := make([]error, 0)
 			for e := range servicesErrCh {
-				errCh <- e
+				allErrors = append(allErrors, e)
+			}
+
+			if len(allErrors) > 0 {
+				errCh <- fmt.Errorf("Error processing project %s: %v", p, allErrors)
+				return
 			}
 
 			allDumps := make([]*saAccountDump, 0)
