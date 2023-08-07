@@ -35,12 +35,6 @@ func main() {
 		go func(p string) {
 			defer wgProjects.Done()
 
-			err := turnOnLoggingAPIIfNecessary(ctx, p)
-			if err != nil {
-				errCh <- err
-				return
-			}
-
 			serviceAccounts, err := listServiceAccounts(ctx, p)
 			if err != nil {
 				errCh <- err
@@ -119,9 +113,6 @@ func main() {
 			fmt.Println("\t\tDisplay Name:", d.DisplayName)
 			fmt.Println("\t\tEmail:", d.Email)
 			fmt.Println("\t\tDisabled:", d.Disabled)
-			if d.Created != "" {
-				fmt.Println("\t\tCreated:", d.Created)
-			}
 			fmt.Println("\t\tKeys:")
 			for _, key := range d.Keys {
 				fmt.Println("\t\t\t", key)
